@@ -45,7 +45,7 @@ archive: realclean
 
 
 # ----- les exécutables à produire -----
-context: context.o main.o
+context: context.o hw.o main.o
 	${CC} ${LDFLAGS} -o $@ $^
 
 # --------------------------------------
