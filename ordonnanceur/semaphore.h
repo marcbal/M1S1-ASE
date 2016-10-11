@@ -8,7 +8,7 @@
 
 typedef struct sem_s {
 	
-	unsigned int    compteur;
+	int    compteur;
 	
     ctx_s*   ctx_curr;
 } sem_s;

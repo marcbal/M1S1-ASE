@@ -58,6 +58,7 @@ void switch_to_ctx(ctx_s* ctx) {
         cctx->ctx_state = CTX_EXEC;
         cctx->ctx_f(cctx->ctx_arg);
         cctx->ctx_state = CTX_END;
+        // irq_enable();
         yield();
     }
 
@@ -85,22 +86,34 @@ int create_ctx(int stack_size, func_t f, void* arg) {
 
 
 void yield() {
+	// irq_disable();
 	if (cctx) {
-		while (cctx->next->ctx_state == CTX_END) {
-			if (cctx->next == cctx) {
-				ring_ctx = NULL;
-				asm("movl %0, %%esp" : : "r" (mctx.ctx_esp));
-				asm("movl %0, %%ebp" : : "r" (mctx.ctx_ebp));
-				break;
+		ctx_s* tmp_ctx = cctx;
+		while (tmp_ctx->next->ctx_state == CTX_END || tmp_ctx->next->ctx_state == CTX_SEM) {
+			
+			if (tmp_ctx->next->ctx_state == CTX_END) {
+				if (tmp_ctx->next == cctx) {
+					ring_ctx = NULL;
+					// irq_enable();
+					asm("movl %0, %%esp" : : "r" (mctx.ctx_esp));
+					asm("movl %0, %%ebp" : : "r" (mctx.ctx_ebp));
+					break;
+				}
+				else {
+					ctx_s* next_next = tmp_ctx->next->next;
+					free(tmp_ctx->next->ctx_stack);
+					free(tmp_ctx->next);
+					tmp_ctx->next = next_next;
+				}
 			}
-			else {
-				ctx_s* next_next = cctx->next->next;
-				free(cctx->next->ctx_stack);
-				free(cctx->next);
-				cctx->next = next_next;
+			else { // CTX_SEM
+				tmp_ctx = tmp_ctx->next;
+				if (tmp_ctx == cctx) {
+					fprintf(stderr, "Deadlock detected. Returning to main...\n");
+				}
 			}
 		}
-		switch_to_ctx(cctx->next);
+		switch_to_ctx(tmp_ctx->next);
 	}
 	else if (ring_ctx) {
 		switch_to_ctx(ring_ctx);
@@ -108,4 +121,5 @@ void yield() {
 		free(cctx);
 		cctx = NULL;
 	}
+	// irq_enable();
 }

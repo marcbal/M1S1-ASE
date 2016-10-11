@@ -5,7 +5,7 @@
 
 typedef void (func_t)(void*);
 
-enum ctx_st_e {CTX_INIT, CTX_EXEC, CTX_END};
+enum ctx_st_e {CTX_INIT, CTX_EXEC, CTX_END, CTX_SEM};
 
 typedef struct ctx_s {
     unsigned       ctx_magic;
@@ -16,8 +16,13 @@ typedef struct ctx_s {
     char*          ctx_stack;
     enum ctx_st_e  ctx_state;
     
-    struct ctx_s*  next;
+    struct ctx_s*         next;
+    
+    struct ctx_s*         sem_next_ctx;
 } ctx_s;
+
+
+extern ctx_s* cctx;
 
 #define CTX_MAGIC 0x3465A4FD
 
