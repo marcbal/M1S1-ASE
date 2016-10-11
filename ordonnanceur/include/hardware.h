@@ -1,5 +1,5 @@
 /* ------------------------------
-   $Id: hardware.h 176 2015-01-29 18:17:04Z phm $
+   $Id: hardware.h 114 2009-12-01 13:06:43Z simon_duquennoy $
    ------------------------------------------------------------
 
    hardware.h
@@ -60,6 +60,7 @@ extern int init_hardware(const char *fileconfig);
  *          func_irq. la fonction IRQVECTOR[n]() est appelée lorsque 
  *          l'interuption de niveau n est déclanchée par le matériel.
  */
+#define IRQ_VECOTR_SIZE 256
 extern func_irq *irq_vector;	/* n'utilisez pas cette variable    */
 #define IRQVECTOR irq_vector	/* préférez ce #define IRQVECTOR    */
 
