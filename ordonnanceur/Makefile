@@ -16,7 +16,7 @@ LIBS = hardware
 CC      = gcc
 CFLAGS  = -g -Wall -m32
 # CFLAGS += -D_XOPEN_SOURCE=500
-LDFLAGS  = -g -m32 -L${LIBDIR} $(addprefix -l,$(LIBS))
+LDLIBS  = -L${LIBDIR} $(addprefix -l,$(LIBS))
 # ======================================
 
 
@@ -50,6 +50,6 @@ archive: realclean
 
 # ----- les exécutables à produire -----
 context: semaphore.o context.o main.o
-	${CC} ${LDFLAGS} -o $@ $^
+	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
 
 # --------------------------------------

@@ -1,4 +1,5 @@
 
+#include "include/hardware.h"
 
 
 
@@ -30,3 +31,24 @@ extern ctx_s* cctx;
 int create_ctx(int stack_size, func_t f, void* arg);
 
 void yield();
+
+void irq_enable();
+
+void irq_disable();
+
+
+
+
+
+
+void fvide();
+
+
+
+
+#define HARDWARE_INI  "etc/hardware.ini"
+
+#define TIMER_CLOCK   0xF0
+#define TIMER_PARAM   0xF4
+#define TIMER_ALARM   0xF8
+#define TIMER_IRQ     2

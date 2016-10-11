@@ -56,9 +56,9 @@ void switch_to_ctx(ctx_s* ctx) {
 
     if (cctx->ctx_state == CTX_INIT) {
         cctx->ctx_state = CTX_EXEC;
+		// irq_enable();
         cctx->ctx_f(cctx->ctx_arg);
         cctx->ctx_state = CTX_END;
-        // irq_enable();
         yield();
     }
 
@@ -123,3 +123,19 @@ void yield() {
 	}
 	// irq_enable();
 }
+
+
+
+
+
+void irq_enable() {
+	_mask(1);
+	_out(TIMER_ALARM, 0xFFFFFFFE);
+}
+
+void irq_disable() {
+	_mask(15);
+}
+
+
+void fvide() { }

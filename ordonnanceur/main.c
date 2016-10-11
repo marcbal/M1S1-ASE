@@ -109,11 +109,30 @@ void consommateur (void* arg)
 
 
 
-
-
-
 int main(int argc, char *argv[])
 {
+	
+	if (init_hardware(HARDWARE_INI) == 0) {
+		fprintf(stderr, "Erreur lors de init_hardware()\n");
+		exit(EXIT_FAILURE);
+	}
+	
+	
+	
+	for (int i=0; i<16; i++) {
+		IRQVECTOR[i] = fvide;
+	}
+	
+	IRQVECTOR[TIMER_IRQ] = yield;
+	_out(TIMER_PARAM, 128+64+32+8);
+	irq_enable();
+	
+	
+	
+	
+	
+	
+	
 	queue.first = NULL;
 	queue.last = NULL;
 	sem_init(&mutex, 1);                /* controle d'acces au tampon */
