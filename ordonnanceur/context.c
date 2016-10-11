@@ -56,7 +56,7 @@ void switch_to_ctx(ctx_s* ctx) {
 
     if (cctx->ctx_state == CTX_INIT) {
         cctx->ctx_state = CTX_EXEC;
-		// irq_enable();
+		irq_enable();
         cctx->ctx_f(cctx->ctx_arg);
         cctx->ctx_state = CTX_END;
         yield();
@@ -86,7 +86,7 @@ int create_ctx(int stack_size, func_t f, void* arg) {
 
 
 void yield() {
-	// irq_disable();
+	irq_disable();
 	if (cctx) {
 		ctx_s* tmp_ctx = cctx;
 		while (tmp_ctx->next->ctx_state == CTX_END || tmp_ctx->next->ctx_state == CTX_SEM) {
@@ -94,10 +94,10 @@ void yield() {
 			if (tmp_ctx->next->ctx_state == CTX_END) {
 				if (tmp_ctx->next == cctx) {
 					ring_ctx = NULL;
-					// irq_enable();
+					irq_enable();
 					asm("movl %0, %%esp" : : "r" (mctx.ctx_esp));
 					asm("movl %0, %%ebp" : : "r" (mctx.ctx_ebp));
-					break;
+					return;
 				}
 				else {
 					ctx_s* next_next = tmp_ctx->next->next;
@@ -110,6 +110,10 @@ void yield() {
 				tmp_ctx = tmp_ctx->next;
 				if (tmp_ctx == cctx) {
 					fprintf(stderr, "Deadlock detected. Returning to main...\n");
+					irq_enable();
+					asm("movl %0, %%esp" : : "r" (mctx.ctx_esp));
+					asm("movl %0, %%ebp" : : "r" (mctx.ctx_ebp));
+					return;
 				}
 			}
 		}
@@ -121,7 +125,7 @@ void yield() {
 		free(cctx);
 		cctx = NULL;
 	}
-	// irq_enable();
+	irq_enable();
 }
 
 
