@@ -7,6 +7,7 @@
 
 */
 
+#include "dump.h"
 #include <stdio.h>
 #include <ctype.h>
 
