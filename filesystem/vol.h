@@ -5,7 +5,7 @@
 #define VOL_TYPE_OTHER (uint8_t) 2
 
 
-#define VOL_BLOCK_SIZE 128
+#define VOL_BLOCK_SIZE 64
 
 typedef unsigned char block_t[VOL_BLOCK_SIZE];
 
@@ -20,14 +20,14 @@ typedef struct vol_s {
 	uint8_t type;
 } __attribute__((packed)) vol_s;
 
-#define NB_MAX_VOL 8
-#define MBR_MAGIC 0xB00B
+#define NB_MAX_VOL 6
+#define MBR_MAGIC 0xE5B1000B
 
 typedef struct mbr_s {
 	uint8_t nbVol;
 	vol_s volumes[NB_MAX_VOL];
 	
-	uint16_t magic;
+	uint32_t magic;
 } __attribute__((packed)) mbr_s;
 
 

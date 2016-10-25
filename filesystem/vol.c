@@ -62,7 +62,6 @@ void vol_drive_start() {
 	vol_read_mbr();
 	if (mbr.magic != MBR_MAGIC) {
 		printf("Formatting ...\n");
-		fmrt();
 		vol_init_mbr();
 	}
 	
@@ -114,10 +113,16 @@ void vol_print_infos() {
 		printf("- Volume %i: %i bytes - ",
 				i, mbr.volumes[i].nbSector * VOL_BLOCK_SIZE);
 		printf("%i blocks - ", mbr.volumes[i].nbSector);
-		printf("from (%i, %i) abs %i ",
+		printf("(%i, %i) abs %i -> ",
 				mbr.volumes[i].first.cylinder, mbr.volumes[i].first.sector, absSec);
-		printf("to (%i, %i) abs %i\n",
+		printf("(%i, %i) abs %i - ",
 				lastCylSec.cylinder, lastCylSec.sector, lastAbsSec);
+		if (mbr.volumes[i].type == VOL_TYPE_BASE)
+			printf("BASE\n");
+		else if (mbr.volumes[i].type == VOL_TYPE_ANNX)
+			printf("ANNX\n");
+		else
+			printf("OTHER\n");
 	}
 	
 	printf("Volumes locations: 1 char = 1 sector\n  M");
@@ -222,6 +227,11 @@ void vol_read_bloc(uint8_t vol, uint32_t nbloc, block_t* buffer) {
 		fprintf(stderr, "Le numéro de bloc demandé est trop grand\n");
 		return;
 	}
+	
+	cyl_sec_s cylSec = getCylAndSecFromBlock(vol, nbloc);
+	
+	read_sector(cylSec.cylinder, cylSec.sector, (sector_t*)buffer);
+	
 }
 
 
@@ -238,6 +248,10 @@ void vol_write_bloc(uint8_t vol, uint32_t nbloc, block_t* buffer) {
 		return;
 	}
 	
+	cyl_sec_s cylSec = getCylAndSecFromBlock(vol, nbloc);
+	
+	write_sector(cylSec.cylinder, cylSec.sector, (sector_t*)buffer);
+	
 }
 
 
@@ -250,7 +264,7 @@ void vol_format_vol(uint8_t vol) {
 	
 	for (uint32_t i = 0; i < mbr.volumes[vol].nbSector; i++) {
 		cyl_sec_s cylSec = getCylAndSecFromBlock(vol, i);
-		format_sector(cylSec.cylinder, cylSec.sector, 1, 0xFFFFFFFF);
+		format_sector(cylSec.cylinder, cylSec.sector, 1, 0);
 	}
 	
 }

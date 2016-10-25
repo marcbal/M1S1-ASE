@@ -12,8 +12,14 @@
 #define HARDWARE_INI "etc/hardware.ini"
 
 
+int currCylinder = -1, currSector = -1;
+
+dsknfo_s hda_infos;
+
 
 void hda_seek(uint16_t cylinder, uint16_t sector) {
+	if (cylinder == currCylinder && sector == currSector)
+		return;
 	_out(HDA_DATAREGS,   (cylinder >> 8) & 0xff);
 	_out(HDA_DATAREGS+1, (cylinder) & 0xff);
 	
@@ -23,15 +29,8 @@ void hda_seek(uint16_t cylinder, uint16_t sector) {
 	_out(HDA_CMDREG, CMD_SEEK);
 	
 	_sleep(HDA_IRQ);
-}
-
-void hda_read_sector(sector_t* buffer) {
-	_out(HDA_DATAREGS,   0x00);
-	_out(HDA_DATAREGS+1, 0x01);
-	
-	_out(HDA_CMDREG, CMD_READ);
-	_sleep(HDA_IRQ);
-	memcpy(buffer, MASTERBUFFER, HDA_SECTORSIZE);
+	currCylinder = cylinder;
+	currSector = sector;
 }
 
 void hda_read_sector_n(void* buffer, uint16_t n) {
@@ -41,6 +40,11 @@ void hda_read_sector_n(void* buffer, uint16_t n) {
 	_out(HDA_CMDREG, CMD_READ);
 	_sleep(HDA_IRQ);
 	memcpy(buffer, MASTERBUFFER, (HDA_SECTORSIZE > n) ? n : HDA_SECTORSIZE);
+	currSector = (currSector + 1) % hda_infos.nbSector;
+}
+
+void hda_read_sector(sector_t* buffer) {
+	hda_read_sector_n(buffer, sizeof(sector_t));
 }
 
 void hda_format_sector(uint32_t data) {
@@ -55,19 +59,11 @@ void hda_format_sector(uint32_t data) {
 	_out(HDA_CMDREG, CMD_FORMAT);
 	
 	_sleep(HDA_IRQ);
+	currSector = (currSector + 1) % hda_infos.nbSector;
 }
 
 dsknfo_s drive_infos() {
-	_out(HDA_CMDREG, CMD_DSKINFO);
-	
-	
-	dsknfo_s ret;
-	
-	ret.nbCylinder = (_in(HDA_DATAREGS    ) << 8) + _in(HDA_DATAREGS + 1);
-	ret.nbSector   = (_in(HDA_DATAREGS + 2) << 8) + _in(HDA_DATAREGS + 3);
-	ret.sectorSize = (_in(HDA_DATAREGS + 4) << 8) + _in(HDA_DATAREGS + 5);
-	
-	return ret;
+	return hda_infos;
 }
 
 
@@ -79,6 +75,7 @@ void hda_write_sector(sector_t* buffer) {
 	memcpy(MASTERBUFFER, buffer, HDA_SECTORSIZE);
 	_out(HDA_CMDREG, CMD_WRITE);
 	_sleep(HDA_IRQ);
+	currSector = (currSector + 1) % hda_infos.nbSector;
 }
 
 
@@ -149,22 +146,24 @@ void init_material() {
 		IRQVECTOR[i] = fvide;
 	}
 	
-	// IRQVECTOR[HDA_IRQ] = ;
-	//_out(TIMER_PARAM, 128+64+32+8);
-	//irq_enable();
+	// init info from disk
+	
+	_out(HDA_CMDREG, CMD_DSKINFO);
+	hda_infos.nbCylinder = (_in(HDA_DATAREGS    ) << 8) + _in(HDA_DATAREGS + 1);
+	hda_infos.nbSector   = (_in(HDA_DATAREGS + 2) << 8) + _in(HDA_DATAREGS + 3);
+	hda_infos.sectorSize = (_in(HDA_DATAREGS + 4) << 8) + _in(HDA_DATAREGS + 5);
 	
 }
 
 
 
 void drive_print_infos() {
-	dsknfo_s infos = drive_infos();
 	
 	printf("HDA Infos:\n");
-	printf("- Nb cylinder:      %i\n", infos.nbCylinder);
-	printf("- Nb sector/cyl:    %i\n", infos.nbSector);
-	printf("- Sector size:      %i\n", infos.sectorSize);
-	int totSec = infos.nbSector * infos.nbCylinder;
+	printf("- Nb cylinder:      %i\n", hda_infos.nbCylinder);
+	printf("- Nb sector/cyl:    %i\n", hda_infos.nbSector);
+	printf("- Sector size:      %i\n", hda_infos.sectorSize);
+	int totSec = hda_infos.nbSector * hda_infos.nbCylinder;
 	printf("- Total nb sector:  %i\n", totSec);
-	printf("- Total size:       %i bytes\n", totSec * infos.sectorSize);
+	printf("- Total size:       %i bytes\n", totSec * hda_infos.sectorSize);
 }

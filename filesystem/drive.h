@@ -1,7 +1,7 @@
 #include <inttypes.h>
 
 
-#define HDA_SECTORSIZE  128
+#define HDA_SECTORSIZE  64
 
 typedef struct dsknfo_s {
 	uint16_t nbCylinder, nbSector, sectorSize;

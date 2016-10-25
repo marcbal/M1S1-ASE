@@ -16,32 +16,26 @@ int main(int argc, char** argv) {
 		
 		volume.first.cylinder = 0;
 		volume.first.sector = 1;
-		volume.nbSector = 15;
+		volume.nbSector = 767;
 		volume.type = VOL_TYPE_BASE;
 		vol_add_volume(volume);
 		
-		volume.first.cylinder = 1;
+		volume.first.cylinder = 12;
 		volume.first.sector = 0;
-		volume.nbSector = 16;
+		volume.nbSector = 64;
 		vol_add_volume(volume);
 		
-		volume.first.cylinder = 2;
+		volume.first.cylinder = 13;
 		vol_add_volume(volume);
 		
-		volume.first.cylinder = 3;
+		volume.first.cylinder = 14;
 		vol_add_volume(volume);
 		
-		volume.first.cylinder = 4;
+		volume.first.cylinder = 15;
+		volume.nbSector = 32;
 		vol_add_volume(volume);
 		
-		volume.first.cylinder = 5;
-		vol_add_volume(volume);
-		
-		volume.first.cylinder = 6;
-		vol_add_volume(volume);
-		
-		volume.first.cylinder = 7;
-		volume.nbSector = 144;
+		volume.first.sector = 32;
 		vol_add_volume(volume);
 	}
 	
@@ -51,6 +45,9 @@ int main(int argc, char** argv) {
 	*/
 	
 	vol_print_infos();
+	
+	
+	vol_format_vol(3);
 	
 	return 0;
 }
