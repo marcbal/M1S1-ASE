@@ -49,7 +49,7 @@ archive: realclean
 
 
 # ----- les exécutables à produire -----
-filesystem: drive.o dump.o main.o
+filesystem: vol.o drive.o dump.o main.o
 	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
 
 # --------------------------------------
