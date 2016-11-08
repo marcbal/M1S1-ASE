@@ -59,6 +59,10 @@ void vol_format_vol(uint8_t vol);
  */
 void vol_print_infos();
 
+
+mbr_s vol_get_mbr();
+
+
 /**
  * retourne le nombre de volume actuellement dans le disque
  */

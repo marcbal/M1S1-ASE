@@ -23,11 +23,11 @@ LDLIBS  = -L${LIBDIR} $(addprefix -l,$(LIBS))
 
 # commande 'make' sans argument
 # lister les exécutables à produire
-all: filesystem
+all: dmps fmrt dvol mkvol rmvol
 
 # lister en argument de 'rm' les noms de fichiers binaires exécutables
 realclean: clean
-	rm filesystem || true
+	rm dmps fmrt dvol mkvol rmvol || true
 
 
 
@@ -49,7 +49,20 @@ archive: realclean
 
 
 # ----- les exécutables à produire -----
-filesystem: vol.o drive.o dump.o main.o
+
+dmps: drive.o dump.o cmd_dmps.o
+	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
+
+fmrt: drive.o cmd_fmrt.o
+	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
+
+dvol: drive.o vol.o cmd_dvol.o
+	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
+
+mkvol: drive.o vol.o cmd_mkvol.o
+	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
+
+rmvol: drive.o vol.o cmd_rmvol.o
 	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
 
 # --------------------------------------

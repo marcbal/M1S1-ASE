@@ -52,6 +52,13 @@ void vol_init_mbr() {
 
 
 
+mbr_s vol_get_mbr() {
+	return mbr;
+}
+
+
+
+
 void vol_drive_start() {
 	
 	init_material();
@@ -61,7 +68,7 @@ void vol_drive_start() {
 	dsknfo = drive_infos();
 	vol_read_mbr();
 	if (mbr.magic != MBR_MAGIC) {
-		printf("Formatting ...\n");
+		printf("Formatting MBR ...\n");
 		vol_init_mbr();
 	}
 	
@@ -105,7 +112,7 @@ void vol_print_infos() {
 	drive_print_infos();
 	
 	printf("MBR Volumes infos (%i/%i):\n", mbr.nbVol, NB_MAX_VOL);
-	//dmps(0, 0);
+	
 	for (int i = 0; i < mbr.nbVol; i++) {
 		uint32_t absSec = getAbsoluteSector(mbr.volumes[i].first);
 		uint32_t lastAbsSec = absSec + mbr.volumes[i].nbSector - 1;
@@ -125,7 +132,7 @@ void vol_print_infos() {
 			printf("OTHER\n");
 	}
 	
-	printf("Volumes locations: 1 char = 1 sector\n  M");
+	printf("HDA Volumes map: 1 char = 1 sector ; 1 line = 1 cylinder\n  M");
 	for (uint32_t absSec = 1; absSec < dsknfo.nbSector * dsknfo.nbCylinder; absSec++) {
 		if (absSec % dsknfo.nbSector == 0)
 			printf("\n  ");

@@ -110,22 +110,6 @@ void format_sector(uint16_t cylinder, uint16_t sector, unsigned int nsector, uin
 
 
 
-void dmps(uint16_t cylinder, uint16_t sector) {
-	sector_t sector_content;
-	read_sector(cylinder, sector, &sector_content);
-	dump((unsigned char*)&sector_content, HDA_SECTORSIZE, 0, 1);
-}
-
-
-
-
-
-void fmrt() {
-	dsknfo_s infos = drive_infos();
-	
-	for (unsigned int i = 0; i < infos.nbCylinder; i++)
-		format_sector(i, 0, infos.nbSector, 0);
-}
 
 
 
