@@ -16,7 +16,7 @@ void print_usage(char** argv) {
 
 
 int main(int argc, char** argv) {
-	init_material();
+	drive_init_material();
 	infos = drive_infos();
 	
 	if (argc < 3) {
@@ -39,9 +39,9 @@ int main(int argc, char** argv) {
 		return 1;
 	}
 	
-	sector_t sector_content;
-	read_sector((uint16_t)arg1, (uint16_t)arg2, &sector_content);
-	dump((unsigned char*)&sector_content, infos.sectorSize, 0, 1);
-	
+	void* sector_content = drive_allocate_buffer();
+	drive_read_sector((uint16_t)arg1, (uint16_t)arg2, sector_content);
+	dump((unsigned char*)sector_content, infos.sectorSize, 0, 1);
+	drive_free_buffer(sector_content);
 	return 0;
 }

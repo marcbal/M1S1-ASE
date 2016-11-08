@@ -33,13 +33,14 @@ cyl_sec_s getCylAndSec(uint32_t absoluteSector) {
 
 
 void vol_read_mbr() {
-	read_sector_n(0, 0, &mbr, sizeof(mbr_s));
+	drive_read_sector_n(0, 0, &mbr, sizeof(mbr_s));
 }
 
 void vol_write_mbr() {
-	sector_t buffer;
-	memcpy(&buffer, &mbr, sizeof(mbr_s));
-	write_sector(0, 0, &buffer);
+	void* buffer = drive_allocate_buffer();
+	memcpy(buffer, &mbr, sizeof(mbr_s));
+	drive_write_sector(0, 0, buffer);
+	drive_free_buffer(buffer);
 }
 
 
@@ -61,10 +62,9 @@ mbr_s vol_get_mbr() {
 
 void vol_drive_start() {
 	
-	init_material();
+	drive_init_material();
 	
-	assert(sizeof(sector_t) >= sizeof(mbr_s));
-	assert(sizeof(sector_t) == sizeof(block_t));
+	assert(drive_infos().sectorSize >= sizeof(mbr_s));
 	dsknfo = drive_infos();
 	vol_read_mbr();
 	if (mbr.magic != MBR_MAGIC) {
@@ -118,7 +118,7 @@ void vol_print_infos() {
 		uint32_t lastAbsSec = absSec + mbr.volumes[i].nbSector - 1;
 		cyl_sec_s lastCylSec = getCylAndSec(lastAbsSec);
 		printf("- Volume %i: %i bytes - ",
-				i, mbr.volumes[i].nbSector * VOL_BLOCK_SIZE);
+				i, mbr.volumes[i].nbSector * drive_infos().sectorSize);
 		printf("%i blocks - ", mbr.volumes[i].nbSector);
 		printf("(%i, %i) abs %i -> ",
 				mbr.volumes[i].first.cylinder, mbr.volumes[i].first.sector, absSec);
@@ -183,6 +183,8 @@ int vol_add_volume(vol_s volume) {
 	mbr.nbVol++;
 	vol_write_mbr();
 	
+	drive_format_sector(volume.first.cylinder, volume.first.sector, 1, 0);
+	
 	return 1;
 }
 
@@ -223,59 +225,78 @@ uint32_t vol_get_nb_blocks(uint8_t vol) {
 
 
 
-void vol_read_bloc(uint8_t vol, uint32_t nbloc, block_t* buffer) {
+
+
+int vol_valid_vol_block(uint8_t vol, uint32_t nbloc) {
 	if (vol >= mbr.nbVol) {
 		fprintf(stderr, "Le volume demandé n'existe pas\n");
-		return;
+		return 0;
 	}
+	
 	vol_s* volume = &(mbr.volumes[vol]);
 	
 	if (nbloc >= volume->nbSector) {
 		fprintf(stderr, "Le numéro de bloc demandé est trop grand\n");
-		return;
+		return 0;
 	}
 	
-	cyl_sec_s cylSec = getCylAndSecFromBlock(vol, nbloc);
-	
-	read_sector(cylSec.cylinder, cylSec.sector, (sector_t*)buffer);
-	
+	return 1;
 }
 
 
 
-void vol_write_bloc(uint8_t vol, uint32_t nbloc, block_t* buffer) {
-	if (vol >= mbr.nbVol) {
-		fprintf(stderr, "Le volume demandé n'existe pas\n");
-		return;
-	}
-	vol_s* volume = &(mbr.volumes[vol]);
-	
-	if (nbloc >= volume->nbSector) {
-		fprintf(stderr, "Le numéro de bloc demandé est trop grand\n");
-		return;
-	}
+
+void vol_read_bloc(uint8_t vol, uint32_t nbloc, void* buffer) {
+	if (!vol_valid_vol_block(vol, nbloc)) return;
 	
 	cyl_sec_s cylSec = getCylAndSecFromBlock(vol, nbloc);
 	
-	write_sector(cylSec.cylinder, cylSec.sector, (sector_t*)buffer);
+	drive_read_sector(cylSec.cylinder, cylSec.sector, (void*)buffer);
+	
+}
+
+
+void vol_read_bloc_n(uint8_t vol, uint32_t nbloc, void* buffer, uint32_t dataSize) {
+	if (!vol_valid_vol_block(vol, nbloc)) return;
+	
+	cyl_sec_s cylSec = getCylAndSecFromBlock(vol, nbloc);
+	
+	drive_read_sector_n(cylSec.cylinder, cylSec.sector, buffer, dataSize);
+}
+
+
+
+void vol_write_bloc(uint8_t vol, uint32_t nbloc, void* buffer) {
+	if (!vol_valid_vol_block(vol, nbloc)) return;
+	
+	cyl_sec_s cylSec = getCylAndSecFromBlock(vol, nbloc);
+	
+	drive_write_sector(cylSec.cylinder, cylSec.sector, buffer);
 	
 }
 
 
 
 void vol_format_vol(uint8_t vol) {
-	if (vol >= mbr.nbVol) {
-		fprintf(stderr, "Le volume demandé n'existe pas\n");
-		return;
-	}
+	if (!vol_valid_vol_block(vol, 0)) return;
 	
 	for (uint32_t i = 0; i < mbr.volumes[vol].nbSector; i++) {
 		cyl_sec_s cylSec = getCylAndSecFromBlock(vol, i);
-		format_sector(cylSec.cylinder, cylSec.sector, 1, 0);
+		drive_format_sector(cylSec.cylinder, cylSec.sector, 1, 0);
 	}
 	
 }
 
 
+
+
+
+void* vol_allocate_buffer() {
+	return drive_allocate_buffer();
+}
+
+void vol_free_buffer(void* buffer) {
+	drive_free_buffer(buffer);
+}
 
 

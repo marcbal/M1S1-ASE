@@ -9,7 +9,6 @@
 #define HDA_CMDREG   0x3F6
 #define HDA_DATAREGS 0x110
 #define HDA_IRQ      14
-#define HARDWARE_INI "etc/hardware.ini"
 
 
 int currCylinder = -1, currSector = -1;
@@ -39,12 +38,12 @@ void hda_read_sector_n(void* buffer, uint16_t n) {
 	
 	_out(HDA_CMDREG, CMD_READ);
 	_sleep(HDA_IRQ);
-	memcpy(buffer, MASTERBUFFER, (HDA_SECTORSIZE > n) ? n : HDA_SECTORSIZE);
+	memcpy(buffer, MASTERBUFFER, (hda_infos.sectorSize > n) ? n : hda_infos.sectorSize);
 	currSector = (currSector + 1) % hda_infos.nbSector;
 }
 
-void hda_read_sector(sector_t* buffer) {
-	hda_read_sector_n(buffer, sizeof(sector_t));
+void hda_read_sector(void* buffer) {
+	hda_read_sector_n(buffer, hda_infos.sectorSize);
 }
 
 void hda_format_sector(uint32_t data) {
@@ -69,10 +68,10 @@ dsknfo_s drive_infos() {
 
 
 
-void hda_write_sector(sector_t* buffer) {
+void hda_write_sector(void* buffer) {
 	_out(HDA_DATAREGS,   0x00);
 	_out(HDA_DATAREGS+1, 0x01);
-	memcpy(MASTERBUFFER, buffer, HDA_SECTORSIZE);
+	memcpy(MASTERBUFFER, buffer, hda_infos.sectorSize);
 	_out(HDA_CMDREG, CMD_WRITE);
 	_sleep(HDA_IRQ);
 	currSector = (currSector + 1) % hda_infos.nbSector;
@@ -86,19 +85,19 @@ void hda_write_sector(sector_t* buffer) {
 
 
 
-void read_sector(uint16_t cylinder, uint16_t sector, sector_t* buffer) {
+void drive_read_sector(uint16_t cylinder, uint16_t sector, void* buffer) {
 	hda_seek(cylinder, sector);
-	hda_read_sector((sector_t*)buffer);
+	hda_read_sector(buffer);
 }
-void read_sector_n(uint16_t cylinder, uint16_t sector, void* buffer, uint16_t dataSize) {
+void drive_read_sector_n(uint16_t cylinder, uint16_t sector, void* buffer, uint16_t dataSize) {
 	hda_seek(cylinder, sector);
 	hda_read_sector_n(buffer, dataSize);
 }
-void write_sector(uint16_t cylinder, uint16_t sector, const sector_t* buffer) {
+void drive_write_sector(uint16_t cylinder, uint16_t sector, void* buffer) {
 	hda_seek(cylinder, sector);
-	hda_write_sector((sector_t*)buffer);
+	hda_write_sector(buffer);
 }
-void format_sector(uint16_t cylinder, uint16_t sector, unsigned int nsector, uint32_t value) {
+void drive_format_sector(uint16_t cylinder, uint16_t sector, unsigned int nsector, uint32_t value) {
 	hda_seek(cylinder, sector);
 	for (uint32_t i=0; i<nsector; i++)
 		hda_format_sector(value);
@@ -119,7 +118,12 @@ void format_sector(uint16_t cylinder, uint16_t sector, unsigned int nsector, uin
 
 void fvide() { }
 
-void init_material() {
+void drive_init_material() {
+	
+	char* HARDWARE_INI = getenv("HW_CONFIG");
+	if (HARDWARE_INI == NULL) {
+		HARDWARE_INI = "etc/hardware.ini\0";
+	}
 	
 	if (init_hardware(HARDWARE_INI) == 0) {
 		fprintf(stderr, "Erreur lors de init_hardware()\n");
@@ -150,4 +154,15 @@ void drive_print_infos() {
 	int totSec = hda_infos.nbSector * hda_infos.nbCylinder;
 	printf("- Total nb sector:  %i\n", totSec);
 	printf("- Total size:       %i bytes\n", totSec * hda_infos.sectorSize);
+}
+
+
+
+
+void* drive_allocate_buffer() {
+	return malloc(hda_infos.sectorSize);
+}
+
+void drive_free_buffer(void* buffer) {
+	free(buffer);
 }

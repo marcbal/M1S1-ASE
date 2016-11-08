@@ -5,10 +5,6 @@
 #define VOL_TYPE_OTHER (uint8_t) 2
 
 
-#define VOL_BLOCK_SIZE 64
-
-typedef unsigned char block_t[VOL_BLOCK_SIZE];
-
 
 typedef struct cyl_sec_s {
 	uint16_t cylinder, sector;
@@ -44,10 +40,16 @@ void vol_drive_start();
 
 
 
+void* vol_allocate_buffer();
+
+void vol_free_buffer(void* buffer);
 
 
-void vol_read_bloc(uint8_t vol, uint32_t nbloc, block_t* buffer);
-void vol_write_bloc(uint8_t vol, uint32_t nbloc, block_t* buffer);
+
+
+void vol_read_bloc(uint8_t vol, uint32_t nbloc, void* buffer);
+void vol_read_bloc_n(uint8_t vol, uint32_t nbloc, void* buffer, uint32_t dataSize);
+void vol_write_bloc(uint8_t vol, uint32_t nbloc, void* buffer);
 void vol_format_vol(uint8_t vol);
 
 

@@ -23,11 +23,11 @@ LDLIBS  = -L${LIBDIR} $(addprefix -l,$(LIBS))
 
 # commande 'make' sans argument
 # lister les exécutables à produire
-all: dmps fmrt dvol mkvol rmvol
+all: dmps fmrt dvol mkvol rmvol mknfs dfs valid_super
 
 # lister en argument de 'rm' les noms de fichiers binaires exécutables
 realclean: clean
-	rm dmps fmrt dvol mkvol rmvol || true
+	rm dmps fmrt dvol mkvol rmvol mknfs dfs valid_super || true
 
 
 
@@ -63,6 +63,15 @@ mkvol: drive.o vol.o cmd_mkvol.o
 	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
 
 rmvol: drive.o vol.o cmd_rmvol.o
+	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
+
+mknfs: drive.o vol.o super.o cmd_mknfs.o
+	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
+
+dfs: drive.o vol.o super.o cmd_dfs.o
+	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
+
+valid_super: drive.o vol.o super.o valid_super.o
 	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
 
 # --------------------------------------
