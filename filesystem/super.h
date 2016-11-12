@@ -19,12 +19,6 @@ typedef struct super_s {
 } super_s;
 
 
-typedef struct free_s {
-	uint32_t nbBlock;
-	uint32_t next; // 0 = pas de next. Car 0 c'est l'adresse du super block
-} free_s;
-
-
 
 
 
