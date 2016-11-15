@@ -256,7 +256,7 @@ void vol_read_bloc(uint8_t vol, uint32_t nbloc, void* buffer) {
 }
 
 
-void vol_read_bloc_n(uint8_t vol, uint32_t nbloc, void* buffer, uint32_t dataSize) {
+void vol_read_bloc_n(uint8_t vol, uint32_t nbloc, void* buffer, uint16_t dataSize) {
 	if (!vol_valid_vol_block(vol, nbloc)) return;
 	
 	cyl_sec_s cylSec = getCylAndSecFromBlock(vol, nbloc);
@@ -273,6 +273,27 @@ void vol_write_bloc(uint8_t vol, uint32_t nbloc, void* buffer) {
 	
 	drive_write_sector(cylSec.cylinder, cylSec.sector, buffer);
 	
+}
+
+
+
+void vol_write_bloc_n(uint8_t vol, uint32_t nbloc, void* buffer, uint16_t n) {
+	if (!vol_valid_vol_block(vol, nbloc)) return;
+	
+	cyl_sec_s cylSec = getCylAndSecFromBlock(vol, nbloc);
+	
+	drive_write_sector_n(cylSec.cylinder, cylSec.sector, buffer, n);
+	
+}
+
+
+
+void vol_format_block(uint8_t vol, uint32_t nbloc) {
+	if (!vol_valid_vol_block(vol, nbloc)) return;
+	
+	cyl_sec_s cylSec = getCylAndSecFromBlock(vol, nbloc);
+	
+	drive_format_sector(cylSec.cylinder, cylSec.sector, 1, 0);
 }
 
 

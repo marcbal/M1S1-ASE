@@ -1,7 +1,7 @@
-#include "super.h"
+#include "fs.h"
 
 
 int main(int argc, char** argv) {
-	super_init();
+	fs_init();
 	return 0;
 }

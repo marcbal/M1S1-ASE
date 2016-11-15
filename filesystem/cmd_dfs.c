@@ -1,8 +1,8 @@
-#include "super.h"
+#include "fs.h"
 
 
 int main(int argc, char** argv) {
-	super_init();
-	super_print_infos();
+	fs_init();
+	fs_print_infos();
 	return 0;
 }

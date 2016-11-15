@@ -66,16 +66,20 @@ dsknfo_s drive_infos() {
 }
 
 
-
-
-void hda_write_sector(void* buffer) {
+void hda_write_sector_n(void* buffer, uint16_t n) {
 	_out(HDA_DATAREGS,   0x00);
 	_out(HDA_DATAREGS+1, 0x01);
-	memcpy(MASTERBUFFER, buffer, hda_infos.sectorSize);
+	memcpy(MASTERBUFFER, buffer, n);
 	_out(HDA_CMDREG, CMD_WRITE);
 	_sleep(HDA_IRQ);
 	currSector = (currSector + 1) % hda_infos.nbSector;
 }
+
+
+void hda_write_sector(void* buffer) {
+	hda_write_sector_n(buffer, hda_infos.sectorSize);
+}
+
 
 
 
@@ -96,6 +100,10 @@ void drive_read_sector_n(uint16_t cylinder, uint16_t sector, void* buffer, uint1
 void drive_write_sector(uint16_t cylinder, uint16_t sector, void* buffer) {
 	hda_seek(cylinder, sector);
 	hda_write_sector(buffer);
+}
+void drive_write_sector_n(uint16_t cylinder, uint16_t sector, void* buffer, uint16_t n) {
+	hda_seek(cylinder, sector);
+	hda_write_sector_n(buffer, n);
 }
 void drive_format_sector(uint16_t cylinder, uint16_t sector, unsigned int nsector, uint32_t value) {
 	hda_seek(cylinder, sector);

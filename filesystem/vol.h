@@ -48,9 +48,11 @@ void vol_free_buffer(void* buffer);
 
 
 void vol_read_bloc(uint8_t vol, uint32_t nbloc, void* buffer);
-void vol_read_bloc_n(uint8_t vol, uint32_t nbloc, void* buffer, uint32_t dataSize);
+void vol_read_bloc_n(uint8_t vol, uint32_t nbloc, void* buffer, uint16_t dataSize);
 void vol_write_bloc(uint8_t vol, uint32_t nbloc, void* buffer);
+void vol_write_bloc_n(uint8_t vol, uint32_t nbloc, void* buffer, uint16_t n);
 void vol_format_vol(uint8_t vol);
+void vol_format_block(uint8_t vol, uint32_t nbloc);
 
 
 
