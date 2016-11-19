@@ -23,7 +23,12 @@ typedef struct super_s {
 
 
 
-enum file_type_e { FILE_TYPE, DIR_TYPE };
+typedef uint8_t file_type_e;
+#define FILE_TYPE 0
+#define DIR_TYPE 1
+
+
+
 
 #define N_DIRECT 2
 #define N_INDIRECT 5
@@ -31,7 +36,7 @@ enum file_type_e { FILE_TYPE, DIR_TYPE };
 typedef uint32_t inode_indir_s[N_INDIRECT];
 
 typedef struct inode_s {
-	enum file_type_e type;
+	file_type_e type;
 	uint64_t size;
 	uint32_t direct[N_DIRECT];
 	uint32_t indirect;
@@ -52,9 +57,21 @@ void     fs_print_infos();
 uint8_t fs_get_current_volume();
 
 
+typedef struct vol_info_s{
+	uint32_t nbBlock;
+	uint32_t freeBlock;
+	uint32_t blockSize;
+	uint32_t maxBlockPerFile;
+} vol_info_s;
+
+vol_info_s fs_get_volume_infos();
 
 
-uint32_t fs_create_inode(enum file_type_e type);
+
+
+
+
+uint32_t fs_create_inode(file_type_e type);
 void fs_delete_inode(uint32_t inode);
 uint32_t fs_fileblock_to_volblock(uint32_t inode, uint32_t fblock, bool allocate);
 

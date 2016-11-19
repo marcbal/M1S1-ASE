@@ -352,7 +352,14 @@ void fs_print_infos() {
 	}
 }
 
-
+vol_info_s fs_get_volume_infos() {
+	vol_info_s volInfos;
+	volInfos.nbBlock = super.nbTotalBlock;
+	volInfos.freeBlock = super.nbFreeBlock;
+	volInfos.blockSize = diskInfo.sectorSize;
+	volInfos.maxBlockPerFile = N_DIRECT + N_INDIRECT + N_INDIRECT * N_INDIRECT;
+	return volInfos;
+}
 
 
 
@@ -495,7 +502,7 @@ void fs_write_inode(uint32_t inodeNum, inode_s* inodeData) {
 
 
 
-uint32_t fs_create_inode(enum file_type_e type) {
+uint32_t fs_create_inode(file_type_e type) {
 	uint32_t inode = fs_new_block();
 	inode_s data;
 	data.type = type;
@@ -512,7 +519,6 @@ uint32_t fs_create_inode(enum file_type_e type) {
 void fs_delete_inode(uint32_t inode) {
 	inode_s data;
 	fs_read_inode(inode, &data);
-	fs_free_block(inode);
 	for (int i=0; i<N_DIRECT; i++)
 		fs_free_block(data.direct[i]);
 	if (data.indirect != 0) {
@@ -520,6 +526,7 @@ void fs_delete_inode(uint32_t inode) {
 		vol_read_bloc_n(VOLUME_ID, data.indirect, &indir, sizeof(inode_indir_s));
 		for (int i=0; i<N_INDIRECT; i++)
 			fs_free_block(indir[i]);
+		fs_free_block(data.indirect);
 	}
 	if (data.dbl_indirect != 0) {
 		inode_indir_s dbl_indir;
@@ -531,7 +538,9 @@ void fs_delete_inode(uint32_t inode) {
 				fs_free_block(indir[j]);
 			fs_free_block(dbl_indir[i]);
 		}
+		fs_free_block(data.dbl_indirect);
 	}
+	fs_free_block(inode);
 }
 
 

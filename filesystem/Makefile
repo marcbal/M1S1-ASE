@@ -10,7 +10,7 @@ LIBDIR = lib
 
 LIBS = hardware
 
-BINARIES = dmps fmrt dvol mkvol rmvol mknfs dfs valid_super
+BINARIES = dmps fmrt dvol mkvol rmvol mknfs dfs valid_super valid_inode
 
 
 
@@ -70,6 +70,9 @@ dfs: drive.o vol.o fs.o cmd_dfs.o
 	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
 
 valid_super: drive.o vol.o fs.o valid_super.o
+	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
+
+valid_inode: drive.o vol.o fs.o valid_inode.o
 	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
 
 # --------------------------------------
