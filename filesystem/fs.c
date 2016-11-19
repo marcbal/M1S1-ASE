@@ -29,7 +29,7 @@ super_s super;
 
 
 
-
+bool fsInit = false;
 
 
 
@@ -269,6 +269,9 @@ void fs_save_free(uint32_t block, free_s freeBlock) {
 
 void fs_init() {
 	
+	if (fsInit) return;
+	fsInit = true;
+	
 	const char* CURRENT_VOLUME = getenv("CURRENT_VOLUME");
 	if (CURRENT_VOLUME == NULL) {
 		fprintf(stderr, "Environment variable CURRENT_VOLUME not found.\n");
@@ -282,6 +285,8 @@ void fs_init() {
 	
 	assert(diskInfo.sectorSize >= sizeof(super_s));
 	assert(diskInfo.sectorSize >= sizeof(free_s));
+	assert(diskInfo.sectorSize >= sizeof(inode_s));
+	assert(diskInfo.sectorSize >= sizeof(inode_indir_s));
 	
 	if (vol_get_mbr().nbVol == 0) {
 		fprintf(stderr, "There is no volume in HDA. Please create 1 volume to continue.\n");

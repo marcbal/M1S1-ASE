@@ -1,6 +1,6 @@
 #include "include/hardware.h"
 #include "drive.h"
-#include "dump.h"
+#include "primtypes.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -9,6 +9,8 @@
 #define HDA_CMDREG   0x3F6
 #define HDA_DATAREGS 0x110
 #define HDA_IRQ      14
+
+bool driveInit = false;
 
 
 int currCylinder = -1, currSector = -1;
@@ -127,6 +129,9 @@ void drive_format_sector(uint16_t cylinder, uint16_t sector, unsigned int nsecto
 void fvide() { }
 
 void drive_init_material() {
+	
+	if (driveInit) return;
+	driveInit = true;
 	
 	char* HARDWARE_INI = getenv("HW_CONFIG");
 	if (HARDWARE_INI == NULL) {

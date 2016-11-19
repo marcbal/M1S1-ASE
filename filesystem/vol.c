@@ -7,11 +7,12 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
+#include "primtypes.h"
 
 
 
 
-
+bool volInit = false;
 
 
 
@@ -61,6 +62,9 @@ mbr_s vol_get_mbr() {
 
 
 void vol_drive_start() {
+	
+	if (volInit) return;
+	volInit = true;
 	
 	drive_init_material();
 	

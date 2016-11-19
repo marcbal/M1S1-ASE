@@ -1,6 +1,7 @@
 #include <inttypes.h>
 
 
+
 typedef struct dsknfo_s {
 	uint16_t nbCylinder, nbSector, sectorSize;
 } dsknfo_s;
