@@ -1,45 +1,45 @@
-# numéro de TP
-TP=4
-# nom du coéquipier 1
-NOM1=Badiane
-# nom du coéquipier 2
-NOM2=Baloup
+# nom d'archive
+ARCHIVE=TP4_Baloup_Badiane.zip
 
 # librairies
 LIBDIR = lib
 
 LIBS = hardware
 
+# fichiers binaires à produire
+# les prérequis (.o) des binaires sont à définir plus bas dans le fichier
 BINARIES = dmps fmrt dvol mkvol rmvol mknfs dfs valid_super valid_inode
 
 
+# commande de compilation
+CC      = gcc
+
+# options de compilation (.o et linkage)
+CFLAGS  = -Wall -Werror -m32
+
+
+
+
+
+
 
 # =========== NE PAS TOUCHER ===========
-CC      = gcc
-CFLAGS  = -Wall -Werror -m32
-# CFLAGS += -D_XOPEN_SOURCE=500
-LDLIBS  = -L${LIBDIR} $(addprefix -l,$(LIBS))
-# ======================================
-
-
-
 # commande 'make' sans argument
-# lister les exécutables à produire
 all: ${BINARIES}
 
+LDLIBS  = -L${LIBDIR} $(addprefix -l,$(LIBS))
 
-
-
-# =========== NE PAS TOUCHER ===========
 # Compilation séparée
 %.o: %.c %.h
 	${CC} ${CFLAGS} -c $<
+
 clean:
 	rm *.o ${BINARIES} || true
+
+# cible utilisée pour le rendu sous forme d'archive
 archive: clean
-	zip -r ../TP${TP}_${NOM1}_${NOM2}.zip *
-# Liste des pseudo-cibles utilisés dans ce fichier,
-# qui ne sont pas des noms de fichier à produire
+	zip -r ../${ARCHIVE} *
+
 .PHONY: all clean realclean archive
 
 ${BINARIES}:
@@ -50,7 +50,6 @@ ${BINARIES}:
 
 
 # ----- les exécutables à produire -----
-
 dmps:        drive.o     dump.o cmd_dmps.o
 fmrt:        drive.o            cmd_fmrt.o
 dvol:        drive.o vol.o      cmd_dvol.o
@@ -60,5 +59,3 @@ mknfs:       drive.o vol.o fs.o cmd_mknfs.o
 dfs:         drive.o vol.o fs.o cmd_dfs.o
 valid_super: drive.o vol.o fs.o valid_super.o
 valid_inode: drive.o vol.o fs.o valid_inode.o
-
-# --------------------------------------
