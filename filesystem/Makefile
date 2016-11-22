@@ -16,7 +16,7 @@ BINARIES = dmps fmrt dvol mkvol rmvol mknfs dfs valid_super valid_inode
 
 # =========== NE PAS TOUCHER ===========
 CC      = gcc
-CFLAGS  = -g -Wall -Werror -m32
+CFLAGS  = -Wall -Werror -m32
 # CFLAGS += -D_XOPEN_SOURCE=500
 LDLIBS  = -L${LIBDIR} $(addprefix -l,$(LIBS))
 # ======================================
@@ -41,6 +41,9 @@ archive: clean
 # Liste des pseudo-cibles utilisés dans ce fichier,
 # qui ne sont pas des noms de fichier à produire
 .PHONY: all clean realclean archive
+
+${BINARIES}:
+	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
 # ======================================
 
 
@@ -48,31 +51,14 @@ archive: clean
 
 # ----- les exécutables à produire -----
 
-dmps: drive.o dump.o cmd_dmps.o
-	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
-
-fmrt: drive.o cmd_fmrt.o
-	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
-
-dvol: drive.o vol.o cmd_dvol.o
-	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
-
-mkvol: drive.o vol.o cmd_mkvol.o
-	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
-
-rmvol: drive.o vol.o cmd_rmvol.o
-	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
-
-mknfs: drive.o vol.o fs.o cmd_mknfs.o
-	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
-
-dfs: drive.o vol.o fs.o cmd_dfs.o
-	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
-
+dmps:        drive.o     dump.o cmd_dmps.o
+fmrt:        drive.o            cmd_fmrt.o
+dvol:        drive.o vol.o      cmd_dvol.o
+mkvol:       drive.o vol.o      cmd_mkvol.o
+rmvol:       drive.o vol.o      cmd_rmvol.o
+mknfs:       drive.o vol.o fs.o cmd_mknfs.o
+dfs:         drive.o vol.o fs.o cmd_dfs.o
 valid_super: drive.o vol.o fs.o valid_super.o
-	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
-
 valid_inode: drive.o vol.o fs.o valid_inode.o
-	${CC} ${CFLAGS} -o $@ $^ ${LDLIBS}
 
 # --------------------------------------
