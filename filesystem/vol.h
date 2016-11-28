@@ -1,3 +1,6 @@
+#ifndef VOL_H
+#define VOL_H
+
 #include <inttypes.h>
 
 #define VOL_TYPE_BASE (uint8_t) 0
@@ -92,3 +95,5 @@ int vol_add_volume(vol_s volume);
  * retourne 1 si réussi, 0 sinon
  */
 int vol_remove_volume(uint8_t vol);
+
+#endif

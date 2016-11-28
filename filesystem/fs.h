@@ -1,3 +1,6 @@
+#ifndef FS_H
+#define FS_H
+
 #include <inttypes.h>
 #include "primtypes.h"
 
@@ -73,5 +76,8 @@ vol_info_s fs_get_volume_infos();
 
 uint32_t fs_create_inode(file_type_e type);
 void fs_delete_inode(uint32_t inode);
+void fs_read_inode(uint32_t inodeNum, inode_s* inodeData);
+void fs_write_inode(uint32_t inodeNum, inode_s* inodeData);
 uint32_t fs_fileblock_to_volblock(uint32_t inode, uint32_t fblock, bool allocate);
 
+#endif

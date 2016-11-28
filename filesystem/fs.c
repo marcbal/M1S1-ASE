@@ -504,6 +504,8 @@ void fs_write_inode(uint32_t inodeNum, inode_s* inodeData) {
 
 uint32_t fs_create_inode(file_type_e type) {
 	uint32_t inode = fs_new_block();
+	if (inode == 0)
+		return 0;
 	inode_s data;
 	data.type = type;
 	data.size = 0;
