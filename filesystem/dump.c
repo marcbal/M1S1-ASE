@@ -19,7 +19,7 @@ dump(unsigned char *buffer,
      int ascii_dump,
      int octal_dump) 
 {
-    int i,j;
+    unsigned int i,j;
     
     for (i=0; i<buffer_size; i+=16) {
 	/* offset */

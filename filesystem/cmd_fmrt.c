@@ -1,6 +1,6 @@
 #include "drive.h"
 
-int main(int argc, char** argv) {
+int main() {
 	drive_init_material();
 	dsknfo_s infos = drive_infos();
 	for (unsigned int i = 0; i < infos.nbCylinder; i++)

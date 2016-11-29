@@ -9,13 +9,13 @@ LIBS = hardware
 # fichiers binaires à produire
 # les prérequis (.o) des binaires sont à définir plus bas dans le fichier
 BINARIES = dmps fmrt dvol mkvol rmvol mknfs dfs valid_super valid_inode \
-		inodecreate inoderead inodewrite
+		if_nfile if_pfile if_dfile
 
 # commande de compilation
 CC      = gcc
 
 # options de compilation (.o et linkage)
-CFLAGS  = -Wall -Werror -m32
+CFLAGS  = -Wall -Wextra -Werror -m32
 
 
 
@@ -59,6 +59,6 @@ mknfs:       drive.o vol.o fs.o         cmd_mknfs.o
 dfs:         drive.o vol.o fs.o         cmd_dfs.o
 valid_super: drive.o vol.o fs.o         valid_super.o
 valid_inode: drive.o vol.o fs.o         valid_inode.o
-inoderead:   drive.o vol.o fs.o ifile.o cmd_inoderead.o
-inodecreate: drive.o vol.o fs.o ifile.o cmd_inodecreate.o
-inodewrite:  drive.o vol.o fs.o ifile.o cmd_inodewrite.o
+if_pfile:    drive.o vol.o fs.o ifile.o if_pfile.o
+if_nfile:    drive.o vol.o fs.o ifile.o if_nfile.o
+if_dfile:    drive.o vol.o fs.o ifile.o if_dfile.o

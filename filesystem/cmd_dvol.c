@@ -4,7 +4,7 @@
 
 
 
-int main(int argc, char** argv) {
+int main() {
 	vol_drive_start();
 	vol_print_infos();
 	return 0;
