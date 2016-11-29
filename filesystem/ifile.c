@@ -105,6 +105,7 @@ int ifile_open(file_desc_t *fd, uint32_t inumber) {
 	fd->inode = inumber;
 	fd->type = inodeData.type;
 	fd->size = inodeData.size;
+	fd->storedSize = inodeData.size;
 	fd->currentPos = fd->currentPosInBuffer
 					= fd->bufferPos
 					= fd->bufferIndex
@@ -127,6 +128,13 @@ void ifile_flush(file_desc_t *fd) {
 	}
 	vol_write_bloc(fs_get_current_volume(), fd->bufferBlock, fd->buffer);
 	fd->bufferModified = false;
+	if (fd->size != fd->storedSize) {
+		inode_s inode;
+		fs_read_inode(fd->inode, &inode);
+		inode.size = fd->size;
+		fs_write_inode(fd->inode, &inode);
+		fd->storedSize = fd->size;
+	}
 }
 
 
@@ -198,10 +206,38 @@ int ifile_writec(file_desc_t *fd, char c) {
 	}
 	fd->buffer[fd->currentPosInBuffer] = c;
 	fd->bufferModified = true;
-	if (fd->currentPos >= fd->size)
 	ifile_change_position(fd, fd->currentPos + 1);
-	return 0;
+	if (fd->currentPos > fd->size) {
+		fd->size = fd->currentPos;
+	}
+	return 1;
 }
 
+
+
+
+int ifile_read(file_desc_t *fd, void *buf, unsigned int nbyte) {
+	for (int i=0; i<nbyte; i++) {
+		int readRet = ifile_readc(fd);
+		if (readRet == READ_INVALID)
+			return READ_INVALID;
+		if (readRet == READ_EOF)
+			return i;
+		buf[i] = (unsigned char) readSet;
+	}
+	return nbyte;
+}
+
+
+
+int ifile_write(file_desc_t *fd, const void *buf, unsigned int nbyte) {
+	for (int i=0; i<nbyte; i++) {
+		int writeRet = ifile_writec(buf[i]);
+		if (writeRet == WRITE_INVALID)
+			return WRITE_INVALID;
+		if (writeRet == WRITE_NO_FREE_SPACE)
+			return i;
+	}
+}
 
 

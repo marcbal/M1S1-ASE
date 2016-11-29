@@ -19,6 +19,7 @@ typedef struct file_desc_t{
 	file_type_e type;
 	
 	uint64_t size;
+	uint64_t storedSize;
 	
 	uint64_t currentPos; // current position in the file, in byte
 	uint32_t currentPosInBuffer; // current position in the current buffer, in byte
