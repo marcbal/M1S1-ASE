@@ -57,6 +57,14 @@ int ifile_delete(uint32_t inumber) {
 }
 
 
+int ifile_truncate(uint32_t inumber) {
+	if (!ifile_inode_valid(inumber))
+		return 0;
+	fs_truncate_inode(inumber);
+	return 1;
+}
+
+
 /*
  * private function to use when read, write or seek operations
  * 

@@ -518,6 +518,40 @@ uint32_t fs_create_inode(file_type_e type) {
 }
 
 
+
+void fs_truncate_inode(uint32_t inode) {
+	inode_s data;
+	fs_read_inode(inode, &data);
+	for (int i=0; i<N_DIRECT; i++) {
+		fs_free_block(data.direct[i]);
+		data.direct[i] = 0;
+	}
+	if (data.indirect != 0) {
+		inode_indir_s indir;
+		vol_read_bloc_n(VOLUME_ID, data.indirect, &indir, sizeof(inode_indir_s));
+		for (int i=0; i<N_INDIRECT; i++)
+			fs_free_block(indir[i]);
+		fs_free_block(data.indirect);
+		data.indirect = 0;
+	}
+	if (data.dbl_indirect != 0) {
+		inode_indir_s dbl_indir;
+		vol_read_bloc_n(VOLUME_ID, data.dbl_indirect, &dbl_indir, sizeof(inode_indir_s));
+		for (int i=0; i<N_INDIRECT; i++) {
+			inode_indir_s indir;
+			vol_read_bloc_n(VOLUME_ID, dbl_indir[i], &indir, sizeof(inode_indir_s));
+			for (int j=0; j<N_INDIRECT; j++)
+				fs_free_block(indir[j]);
+			fs_free_block(dbl_indir[i]);
+		}
+		fs_free_block(data.dbl_indirect);
+		data.dbl_indirect = 0;
+	}
+	data.size = 0;
+	fs_write_inode(inode, &data);
+}
+
+
 void fs_delete_inode(uint32_t inode) {
 	inode_s data;
 	fs_read_inode(inode, &data);

@@ -8,8 +8,8 @@ LIBS = hardware
 
 # fichiers binaires à produire
 # les prérequis (.o) des binaires sont à définir plus bas dans le fichier
-BINARIES = dmps fmrt dvol mkvol rmvol mknfs dfs valid_super valid_inode inodecreate inoderead
-
+BINARIES = dmps fmrt dvol mkvol rmvol mknfs dfs valid_super valid_inode \
+		inodecreate inoderead inodewrite
 
 # commande de compilation
 CC      = gcc
@@ -61,3 +61,4 @@ valid_super: drive.o vol.o fs.o         valid_super.o
 valid_inode: drive.o vol.o fs.o         valid_inode.o
 inoderead:   drive.o vol.o fs.o ifile.o cmd_inoderead.o
 inodecreate: drive.o vol.o fs.o ifile.o cmd_inodecreate.o
+inodewrite:  drive.o vol.o fs.o ifile.o cmd_inodewrite.o
