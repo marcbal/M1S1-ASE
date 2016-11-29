@@ -8,7 +8,7 @@ LIBS = hardware
 
 # fichiers binaires à produire
 # les prérequis (.o) des binaires sont à définir plus bas dans le fichier
-BINARIES = dmps fmrt dvol mkvol rmvol mknfs dfs valid_super valid_inode
+BINARIES = dmps fmrt dvol mkvol rmvol mknfs dfs valid_super valid_inode inodecreate inoderead
 
 
 # commande de compilation
@@ -50,12 +50,14 @@ ${BINARIES}:
 
 
 # ----- les exécutables à produire -----
-dmps:        drive.o     dump.o cmd_dmps.o
-fmrt:        drive.o            cmd_fmrt.o
-dvol:        drive.o vol.o      cmd_dvol.o
-mkvol:       drive.o vol.o      cmd_mkvol.o
-rmvol:       drive.o vol.o      cmd_rmvol.o
-mknfs:       drive.o vol.o fs.o cmd_mknfs.o
-dfs:         drive.o vol.o fs.o cmd_dfs.o
-valid_super: drive.o vol.o fs.o valid_super.o
-valid_inode: drive.o vol.o fs.o valid_inode.o
+dmps:        drive.o dump.o             cmd_dmps.o
+fmrt:        drive.o                    cmd_fmrt.o
+dvol:        drive.o vol.o              cmd_dvol.o
+mkvol:       drive.o vol.o              cmd_mkvol.o
+rmvol:       drive.o vol.o              cmd_rmvol.o
+mknfs:       drive.o vol.o fs.o         cmd_mknfs.o
+dfs:         drive.o vol.o fs.o         cmd_dfs.o
+valid_super: drive.o vol.o fs.o         valid_super.o
+valid_inode: drive.o vol.o fs.o         valid_inode.o
+inoderead:   drive.o vol.o fs.o ifile.o cmd_inoderead.o
+inodecreate: drive.o vol.o fs.o ifile.o cmd_inodecreate.o

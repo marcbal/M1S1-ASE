@@ -26,15 +26,15 @@ typedef struct file_desc_t{
 	uint64_t bufferPos; // position, in byte from the begining of the file, of the first byte of the buffer
 	uint32_t bufferIndex; // block index of the current buffer in the file
 	uint32_t bufferBlock; // block position of the current buffer in the volume
-	void* buffer;
+	unsigned char* buffer;
 	bool bufferModified;
 } file_desc_t;
 
 
 
+void ifile_init();
 
-
-uint32_t ifile_create(enum file_type_e type); 
+uint32_t ifile_create(file_type_e type);
 int ifile_delete(uint32_t inumber);
 
 int ifile_open(file_desc_t *fd, uint32_t inumber);

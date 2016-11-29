@@ -1,4 +1,5 @@
-
+#include <stdlib.h>
+#include <string.h>
 
 
 #include "ifile.h"
@@ -36,14 +37,14 @@ bool ifile_inode_valid(uint32_t inode) {
 }
 
 bool ifile_file_desc_valid(file_desc_t* descriptor) {
-	return ifile_inode_valid(descriptor->inode)
+	return ifile_inode_valid(descriptor->inode);
 }
 
 
 
 
 
-uint32_t ifile_create(enum file_type_e type) {
+uint32_t ifile_create(file_type_e type) {
 	return fs_create_inode(type);
 }
 
@@ -64,14 +65,14 @@ int ifile_delete(uint32_t inumber) {
  * 
  * @return true if we have changed block, false otherwise.
  */
-bool ifile_change_position(file_desc_t* descriptor, uint32_t newPosition) {
+bool ifile_change_position(file_desc_t* descriptor, uint32_t newPos) {
 	uint32_t oldPos = descriptor->currentPos;
 	uint32_t oldBufferIndex = descriptor->bufferIndex;
-	if (newPosition == oldPosition)
+	if (newPos == oldPos)
 		return false;
 	
-	uint32_t newBufferIndex = newPosition / ifile_buffer_size;
-	uint32_t newPosInBuffer = newPosition % ifile_buffer_size;
+	uint32_t newBufferIndex = newPos / ifile_buffer_size;
+	uint32_t newPosInBuffer = newPos % ifile_buffer_size;
 	
 	if (newBufferIndex != oldBufferIndex) {
 		// on change de block
@@ -86,9 +87,9 @@ bool ifile_change_position(file_desc_t* descriptor, uint32_t newPosition) {
 		descriptor->bufferModified = false;
 		
 	}
-	descriptor->currentPos = newPosition;
+	descriptor->currentPos = newPos;
 	descriptor->currentPosInBuffer = newPosInBuffer;
-	
+	return true;
 }
 
 
@@ -151,7 +152,7 @@ void ifile_seek(file_desc_t *fd, int64_t r_offset) { /* relatif */
 		return;
 	if (-r_offset > fd->currentPos)
 		r_offset = -fd->currentPos;
-	ifile_change_position(fd, fd->currentPos + r_offset
+	ifile_change_position(fd, fd->currentPos + r_offset);
 }
 
 
@@ -160,9 +161,9 @@ void ifile_close(file_desc_t *fd) {
 		return;
 	
 	ifile_flush(fd);
-	free(descriptor->buffer);
-	descriptor->buffer = NULL;
-	descriptor->inode = 0; // rend le descripteur invalide
+	free(fd->buffer);
+	fd->buffer = NULL;
+	fd->inode = 0; // rend le descripteur invalide
 	
 	
 }
@@ -186,7 +187,7 @@ int ifile_readc(file_desc_t *fd) {
 			vol_read_bloc(fs_get_current_volume(), fd->bufferBlock, fd->buffer);
 		}
 	}
-	unsigned char v = (unsigned char) fd->buffer[fd->currentPosInBuffer];
+	unsigned char v = fd->buffer[fd->currentPosInBuffer];
 	ifile_change_position(fd, fd->currentPos + 1);
 	return (int) v;
 }
@@ -223,7 +224,7 @@ int ifile_read(file_desc_t *fd, void *buf, unsigned int nbyte) {
 			return READ_INVALID;
 		if (readRet == READ_EOF)
 			return i;
-		buf[i] = (unsigned char) readSet;
+		((unsigned char*)buf)[i] = (unsigned char) readRet;
 	}
 	return nbyte;
 }
@@ -232,12 +233,13 @@ int ifile_read(file_desc_t *fd, void *buf, unsigned int nbyte) {
 
 int ifile_write(file_desc_t *fd, const void *buf, unsigned int nbyte) {
 	for (int i=0; i<nbyte; i++) {
-		int writeRet = ifile_writec(buf[i]);
+		int writeRet = ifile_writec(fd, ((unsigned char*)buf)[i]);
 		if (writeRet == WRITE_INVALID)
 			return WRITE_INVALID;
 		if (writeRet == WRITE_NO_FREE_SPACE)
 			return i;
 	}
+	return nbyte;
 }
 
 
