@@ -6,7 +6,7 @@
 #include <stdlib.h>
 
 
-int main(int argc, char** argv) {
+int main() {
 	srand(time(NULL));
 	drive_init_material();
 	printf("Formattage du disque...\n");

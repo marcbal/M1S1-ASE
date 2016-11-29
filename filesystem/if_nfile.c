@@ -30,5 +30,32 @@ int main(int argc, char** argv) {
 	uint32_t inode = ifile_create(type);
 	printf("%u\n", inode);
 	
+	
+	
+	
+	file_desc_t fd;
+	
+	uint32_t blockSize = fs_get_volume_infos().blockSize;
+	unsigned char* buffer = malloc(blockSize);
+	ifile_open(&fd, inode);
+	
+	uint64_t totalWrite = 0;
+	int nbRead, ret = 0;
+	while((nbRead = fread(buffer, 1, blockSize, stdin)) > 0) {
+		int nbWrite = ifile_write(&fd, buffer, nbRead);
+		if (nbWrite < 0)
+			break;
+		totalWrite += nbWrite;
+		if (nbWrite < nbRead) {
+			fprintf(stderr, "WRITE_NO_FREE_SPACE error\n");
+		}
+	}
+	fprintf(stderr, "ByteWritten: %llu\n", totalWrite);
+	ifile_close(&fd);
+	if (ret == WRITE_INVALID) {
+		fprintf(stderr, "WRITE_INVALID error\n");
+		return 1;
+	}
+	
 	return 0;
 }

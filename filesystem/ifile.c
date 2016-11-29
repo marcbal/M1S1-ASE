@@ -158,8 +158,10 @@ void ifile_seek2(file_desc_t *fd, uint64_t a_offset) { /* absolu */
 void ifile_seek(file_desc_t *fd, int64_t r_offset) { /* relatif */
 	if (!ifile_file_desc_valid(fd))
 		return;
-	if (-r_offset > fd->currentPos)
-		r_offset = -fd->currentPos;
+	if (r_offset < 0) {
+		if ((uint64_t)(-r_offset) > fd->currentPos)
+			r_offset = -fd->currentPos;
+	}
 	ifile_change_position(fd, fd->currentPos + r_offset);
 }
 
@@ -226,7 +228,7 @@ int ifile_writec(file_desc_t *fd, char c) {
 
 
 int ifile_read(file_desc_t *fd, void *buf, unsigned int nbyte) {
-	for (int i=0; i<nbyte; i++) {
+	for (unsigned int i=0; i<nbyte; i++) {
 		int readRet = ifile_readc(fd);
 		if (readRet == READ_INVALID)
 			return READ_INVALID;
@@ -240,7 +242,7 @@ int ifile_read(file_desc_t *fd, void *buf, unsigned int nbyte) {
 
 
 int ifile_write(file_desc_t *fd, const void *buf, unsigned int nbyte) {
-	for (int i=0; i<nbyte; i++) {
+	for (unsigned int i=0; i<nbyte; i++) {
 		int writeRet = ifile_writec(fd, ((unsigned char*)buf)[i]);
 		if (writeRet == WRITE_INVALID)
 			return WRITE_INVALID;

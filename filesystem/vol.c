@@ -137,7 +137,7 @@ void vol_print_infos() {
 	}
 	
 	printf("HDA Volumes map: 1 char = 1 sector ; 1 line = 1 cylinder\n  M");
-	for (uint32_t absSec = 1; absSec < dsknfo.nbSector * dsknfo.nbCylinder; absSec++) {
+	for (uint32_t absSec = 1; absSec < (uint32_t)(dsknfo.nbSector * dsknfo.nbCylinder); absSec++) {
 		if (absSec % dsknfo.nbSector == 0)
 			printf("\n  ");
 		int vol = getVolumeAtAbsoluteSector(absSec);
@@ -171,7 +171,7 @@ int vol_add_volume(vol_s volume) {
 	}
 	uint32_t firstAbsSec = getAbsoluteSector(volume.first);
 	uint32_t lastAbsSec = firstAbsSec + volume.nbSector - 1;
-	if (lastAbsSec >= dsknfo.nbCylinder * dsknfo.nbSector) {
+	if (lastAbsSec >= (uint32_t)(dsknfo.nbCylinder * dsknfo.nbSector)) {
 		fprintf(stderr, "Le volume dépasse la fin du disque\n");
 		return 0;
 	}
