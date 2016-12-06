@@ -17,6 +17,20 @@ typedef struct free_s {
 
 
 
+
+#define SUPER_MAGIC 0x356FA57B
+typedef struct super_s {
+	uint32_t magic;
+	uint32_t firstFreeBlock;
+	uint32_t nbFreeBlock;
+	uint32_t root;
+	char name[32];
+	uint32_t nbTotalBlock;
+} super_s;
+
+
+
+
 uint8_t VOLUME_ID;
 
 dsknfo_s diskInfo;
@@ -333,6 +347,18 @@ void fs_init() {
 	free_list_init();
 	
 	
+}
+
+
+
+void fs_set_rootInode(uint32_t rootInode) {
+	super.root = rootInode;
+	fs_save_super();
+}
+
+
+uint32_t fs_get_rootInode() {
+	return super.root;
 }
 
 

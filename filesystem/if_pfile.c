@@ -31,7 +31,8 @@ int main(int argc, char** argv) {
 	file_desc_t fd;
 	
 	
-	unsigned char buffer[1024];
+	uint32_t blockSize = fs_get_volume_infos().blockSize;
+	unsigned char* buffer = malloc(blockSize);
 	ifile_open(&fd, inode);
 		
 	fprintf(stderr, "Inode: %u\n", fd.inode);
@@ -39,7 +40,7 @@ int main(int argc, char** argv) {
 	
 	int nbRead;
 	uint64_t nbTotalRead = 0;
-	while((nbRead = ifile_read(&fd, buffer, 1024)) > 0) {
+	while((nbRead = ifile_read(&fd, buffer, blockSize)) > 0) {
 		fwrite(buffer, 1, nbRead, stdout);
 		nbTotalRead += nbRead;
 	}

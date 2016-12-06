@@ -38,6 +38,9 @@ uint32_t ifile_create(file_type_e type);
 int ifile_delete(uint32_t inumber);
 int ifile_truncate(uint32_t inumber);
 
+/**
+ * return 1 if ok, 0 otherwise
+ */
 int ifile_open(file_desc_t *fd, uint32_t inumber);
 void ifile_close(file_desc_t *fd);
 void ifile_flush(file_desc_t *fd);
