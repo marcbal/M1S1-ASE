@@ -9,7 +9,7 @@ LIBS = hardware
 # fichiers binaires à produire
 # les prérequis (.o) des binaires sont à définir plus bas dans le fichier
 BINARIES = dmps fmrt dvol mkvol rmvol mknfs dfs valid_super valid_inode \
-		if_nfile if_pfile if_dfile
+		if_nfile if_pfile if_dfile valid_dir
 
 # commande de compilation
 CC      = gcc
@@ -50,15 +50,16 @@ ${BINARIES}:
 
 
 # ----- les exécutables à produire -----
-dmps:        drive.o dump.o             cmd_dmps.o
-fmrt:        drive.o                    cmd_fmrt.o
-dvol:        drive.o vol.o              cmd_dvol.o
-mkvol:       drive.o vol.o              cmd_mkvol.o
-rmvol:       drive.o vol.o              cmd_rmvol.o
-mknfs:       drive.o vol.o fs.o         cmd_mknfs.o
-dfs:         drive.o vol.o fs.o         cmd_dfs.o
-valid_super: drive.o vol.o fs.o         valid_super.o
-valid_inode: drive.o vol.o fs.o         valid_inode.o
-if_pfile:    drive.o vol.o fs.o ifile.o if_pfile.o
-if_nfile:    drive.o vol.o fs.o ifile.o if_nfile.o
-if_dfile:    drive.o vol.o fs.o ifile.o if_dfile.o
+dmps:        drive.o dump.o                     cmd_dmps.o
+fmrt:        drive.o                            cmd_fmrt.o
+dvol:        drive.o vol.o                      cmd_dvol.o
+mkvol:       drive.o vol.o                      cmd_mkvol.o
+rmvol:       drive.o vol.o                      cmd_rmvol.o
+mknfs:       drive.o vol.o fs.o                 cmd_mknfs.o
+dfs:         drive.o vol.o fs.o                 cmd_dfs.o
+valid_super: drive.o vol.o fs.o                 valid_super.o
+valid_inode: drive.o vol.o fs.o                 valid_inode.o
+if_pfile:    drive.o vol.o fs.o ifile.o         if_pfile.o
+if_nfile:    drive.o vol.o fs.o ifile.o         if_nfile.o
+if_dfile:    drive.o vol.o fs.o ifile.o         if_dfile.o
+valid_dir:   drive.o vol.o fs.o ifile.o ftree.o valid_dir.o

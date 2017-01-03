@@ -5,6 +5,8 @@
 #include <inttypes.h>
 #include "primtypes.h"
 
+#include "ifile.h"
+
 
 
 #define FILE_NAME_SIZE 60
@@ -32,6 +34,12 @@ typedef struct {
 void ftree_init();
 
 
+int ftree_inode_dir_open(file_desc_t *fd, uint32_t inode);
+void ftree_inode_dir_close(file_desc_t *fd);
+uint16_t ftree_inode_dir_length(file_desc_t *fd);
+dir_entry_s ftree_inode_dir_get(file_desc_t *fd, uint16_t index);
+void ftree_inode_dir_add(file_desc_t *fd, char* name, uint32_t inode);
+void free_inode_dir_remove(file_desc_t *fd, uint16_t index);
 
 
 
