@@ -81,7 +81,7 @@ void producteur (void* arg)
     objet++;           /* produire l'objet suivant */
     sem_down(&vide);                  /* dec. nb places libres */
     sem_down(&mutex);                 /* entree en section critique */
-    //printf("%i ", *((int*)arg));
+    printf("%i ", *((int*)arg));
     mettre_objet(objet);              /* mettre l'objet dans le tampon */
     sem_up(&mutex);                   /* sortie de section critique */
     sem_up(&plein);                   /* inc. nb place occupees */
@@ -139,10 +139,10 @@ int main(int argc, char *argv[])
 	sem_init(&mutex, 1);                /* controle d'acces au tampon */
 	sem_init(&vide, N);                 /* nb de places libres */
 	sem_init(&plein, 0);                /* nb de places occupees */
-	// int un = 1, deux = 2, trois = 3;
-	create_ctx(1638400, producteur, NULL);
-	//create_ctx(1638400, producteur, &deux);
-	//create_ctx(1638400, producteur, &trois);
+	int un = 1, deux = 2, trois = 3;
+	create_ctx(1638400, producteur, &un);
+	create_ctx(1638400, producteur, &deux);
+	create_ctx(1638400, producteur, &trois);
 	create_ctx(1638400, consommateur, NULL);
 	yield();
 	printf("Retour au main\n");

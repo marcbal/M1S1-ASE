@@ -42,13 +42,13 @@ Université Lille 1 - Master 1 Semestre 1 - 2016/2017
 * Exécuter :
 
     make
-    // les commandes nécessitent la variable d'env. HW_CONFIG
+        // les commandes nécessitent la variable d'env. HW_CONFIG
     ./dmps (couche drive ; dump un secteur du disque)
     ./fmrt (couche drive ; formater tout le disque)
     ./mkvol (couche vol ; créer un volume)
     ./dvol (couche vol ; affiche les volumes)
     ./rmvol (couche vol ; supprimer un volume)
-    // la suite nécessite la variable d'environnement CURRENT_VOLUME
+        // la suite nécessite la variable d'environnement CURRENT_VOLUME
     ./mknfs (couche fs ; initiliser le système de fichier dans le volume (super block et free block))
     ./dfs (couche fs ; afficher les infos (espace libre) du volume)
     ./valid_super (couche fs ; effectue des tests sur la gestion de l'espace libre)
