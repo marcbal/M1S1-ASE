@@ -18,14 +18,14 @@ int main(int argc, char *argv[])
 
 void f_ping(void *args)
 {
-    /*while(1) {*/
+    for (int i = 0; i < 100; i++) {
         printf("A") ;
         switch_to_ctx(&ctx_pong);
         printf("B") ;
         switch_to_ctx(&ctx_pong);
         printf("C") ;
         switch_to_ctx(&ctx_pong);
-    /*}*/
+    }
 }
 
 void f_pong(void *args)

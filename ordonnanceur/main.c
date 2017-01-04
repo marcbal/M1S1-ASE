@@ -63,7 +63,7 @@ void produire_objet(objet_t* t) {
 }
 
 void utiliser_objet(objet_t t) {
-	printf("utiliser_objet: %i\n", t);
+	// printf("utiliser_objet: %i\n", t);
 }
 
 
@@ -75,16 +75,17 @@ void utiliser_objet(objet_t t) {
 
 void producteur (void* arg)
 {
-  objet_t objet ;
+  objet_t objet = 0;
 
-  while (1) {
-    produire_objet(&objet);           /* produire l'objet suivant */
+  do {
+    objet++;           /* produire l'objet suivant */
     sem_down(&vide);                  /* dec. nb places libres */
     sem_down(&mutex);                 /* entree en section critique */
+    //printf("%i ", *((int*)arg));
     mettre_objet(objet);              /* mettre l'objet dans le tampon */
     sem_up(&mutex);                   /* sortie de section critique */
     sem_up(&plein);                   /* inc. nb place occupees */
-  }
+  } while (objet < 1000); // provoque un deadlock
 }
 
 void consommateur (void* arg)
@@ -94,7 +95,7 @@ void consommateur (void* arg)
   while (1) {
     sem_down(&plein);                 /* dec. nb emplacements occupes */
     sem_down(&mutex);                 /* entree section critique */
-    retirer_objet (&objet);           /* retire un objet du tampon */
+    retirer_objet(&objet);            /* retire un objet du tampon */
     sem_up(&mutex);                   /* sortie de la section critique */
     sem_up(&vide);                    /* inc. nb emplacements libres */
     utiliser_objet(objet);            /* utiliser l'objet */
@@ -138,7 +139,10 @@ int main(int argc, char *argv[])
 	sem_init(&mutex, 1);                /* controle d'acces au tampon */
 	sem_init(&vide, N);                 /* nb de places libres */
 	sem_init(&plein, 0);                /* nb de places occupees */
+	// int un = 1, deux = 2, trois = 3;
 	create_ctx(1638400, producteur, NULL);
+	//create_ctx(1638400, producteur, &deux);
+	//create_ctx(1638400, producteur, &trois);
 	create_ctx(1638400, consommateur, NULL);
 	yield();
 	printf("Retour au main\n");

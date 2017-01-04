@@ -40,7 +40,7 @@ void print_tree(uint32_t inode, int recur) {
 		
 	}
 	
-	
+	ftree_inode_dir_close(&dir_desc);
 	
 	
 	

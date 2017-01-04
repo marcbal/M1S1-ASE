@@ -11,28 +11,28 @@ void sem_init(sem_s* sem, unsigned int val) {
 }
 
 void sem_down(sem_s* sem) {
-	// irq_disable();
+	irq_disable();
 	sem->compteur--;
 	// printf("sem_down()->compteur = %i\n", sem->compteur);
 	if (sem->compteur < 0) {
 		cctx->sem_next_ctx = sem->ctx_curr;
 		sem->ctx_curr = cctx;
 		cctx->ctx_state = CTX_SEM;
-		// irq_enable();
+		irq_enable();
 		yield();
 	}
 	else {
-		// irq_enable();
+		irq_enable();
 	}
 }
 
 void sem_up(sem_s* sem) {
-	// irq_disable();
+	irq_disable();
 	sem->compteur++;
 	// printf("sem_up()->compteur = %i\n", sem->compteur);
 	if (sem->compteur <= 0) {
 		sem->ctx_curr->ctx_state = CTX_EXEC;
 		sem->ctx_curr = sem->ctx_curr->sem_next_ctx;
 	}
-	// irq_enable();
+	irq_enable();
 }
