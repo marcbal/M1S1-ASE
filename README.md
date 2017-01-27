@@ -1,13 +1,12 @@
-# ASE - Marc BALOUP - Pape BADIANE
+# ASE
+
+Marc BALOUP - Pape BADIANE
 
 Université Lille 1 - Master 1 Semestre 1 - 2016/2017
 
-# Recette TP
-
 ## `try_throw`
 
-* Montrer code (code repris du TD)
-* Exécuter (Utilisation : entrer des nombres successivement)
+Exécuter (Utilisation : entrer des nombres successivement)
 
     make
     ./try
@@ -18,9 +17,8 @@ Université Lille 1 - Master 1 Semestre 1 - 2016/2017
 
 ## `switch_to`
 
-* Montrer code (code repris du TD)
-  * Comportement si un des contexte se termine : retour au main (simple à implémenter)
-* Exécuter :
+Comportement si un des contexte se termine : retour au main (simple à implémenter).
+Exécuter :
 
     make
     ./switch_to
@@ -28,8 +26,7 @@ Université Lille 1 - Master 1 Semestre 1 - 2016/2017
 
 ## `ordonnanceur`
 
-* Montrer code
-* Exécuter :
+Exécuter :
 
     make
     ./context
@@ -39,7 +36,7 @@ Université Lille 1 - Master 1 Semestre 1 - 2016/2017
 
 
 
-* Exécuter :
+Exécuter :
 
     make
         // les commandes nécessitent la variable d'env. HW_CONFIG
